@@ -1,0 +1,6 @@
+name: User Profile
+description: User Profile Role assigned
+package: Administration
+
+type: module
+core: 8.x

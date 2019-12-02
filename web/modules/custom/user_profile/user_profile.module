@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function user_profile_user_insert($entity)
+{
+
+    // Add the specified role to users whose email address is @mydomain.com.
+    //$email = $entity->getEmail();
+    $sevice_provider = $entity->field_select_role->value;
+
+    //   print_r($sevice_provider);
+    //   die();
+    if ($sevice_provider == 'service_provider') {
+        $entity->addRole('service_provider');
+    } else {
+        $entity->addRole('consumer');
+    }
+
+    $entity->save();
+}
+
+
+
+/**
+ * Form submission handler for user_login_form().
+ *
+ * Redirects the user to the dashboard after logging in.
+ */
+function user_profile_user_login($account)
+{
+    // We want to redirect user on login.
+    global $base_url;
+
+    if (in_array('service_provider', $account->getRoles()) || in_array('consumer', $account->getRoles())) {
+        if ($account->get('field_first_name')->isEmpty() 
+            || $account->get('field_last_name')->isEmpty() 
+            || $account->get('field_sevices')->isEmpty()
+            || $account->get('field_contact_information')->isEmpty()
+            || $account->get('field_address')->isEmpty()
+            || $account->get('field_skills')->isEmpty()) {
+            $response = new Symfony\Component\HttpFoundation\RedirectResponse($base_url . "/user/" . $account->id() . "/edit");
+            $response->send();
+            return;
+        }
+    }
+}
